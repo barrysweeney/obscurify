@@ -1,3 +1,10 @@
+# Obscurify
+[View in browser](https://obscurify.netlify.app/)
+
+React App using the [Spotify Web API](https://developer.spotify.com/documentation/web-api/) to find the least popular track for an artist.
+
+The NodeJS backend for authentication uses this [OAuth bridge template](https://github.com/mpj/oauth-bridge-template)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
