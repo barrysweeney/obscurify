@@ -95,7 +95,8 @@ class App extends Component {
   async findLeastPopularTrack(trackIDs) {
     let parsed = queryString.parse(window.location.search);
     let accessToken = parsed.access_token;
-    let leastPopular;
+    // 100 is the max popularity so this ensures a valid song will be the least popular
+    let leastPopular = {popularity: 101};
     let leastPopularTrackAlbum;
 
     // get each tracks popularity
@@ -111,7 +112,7 @@ class App extends Component {
       const data = await res.json();
 
       // a track is the least popular if it's popularity is less than the current least popular track
-      if (leastPopular === null || data.popularity < leastPopular.popularity) {
+      if (data.popularity < leastPopular.popularity) {
         if (data.artists[0].name === this.state.artistName) {
           leastPopular = data;
           leastPopularTrackAlbum = data.album;
