@@ -18,7 +18,7 @@ export default function SignInButton() {
         <ButtonWrapper
         onClick={() =>
           (window.location =
-            "http://localhost:8888/login")
+            "https://mysterious-mountain-71204.herokuapp.com/login")
         }
       >
         Login in with Spotify <FaSpotify /></ButtonWrapper>
