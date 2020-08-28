@@ -63,7 +63,6 @@ class App extends Component {
       artistName: null,
       searching: false,
       found: false,
-      accessToken: "",
     };
   }
 
@@ -78,15 +77,13 @@ class App extends Component {
 
   async componentDidMount() {
     // get access token for API calls from URL
-      let parsed = queryString.parse(window.location.search);
-      this.setState({
-        accessToken: parsed.access_token,
-      })
+    let parsed = queryString.parse(window.location.search);
+    let accessToken = parsed.access_token;
 
     // get the logged in user's name
     const response = await fetch("https://api.spotify.com/v1/me", {
       headers: {
-        Authorization: "Bearer " + this.state.accessToken,
+        Authorization: "Bearer " + accessToken,
       },
     })
     const data = await response.json();
@@ -96,6 +93,8 @@ class App extends Component {
   }
 
   async findLeastPopularTrack(trackIDs) {
+    let parsed = queryString.parse(window.location.search);
+    let accessToken = parsed.access_token;
     let leastPopular;
     let leastPopularTrackAlbum;
 
@@ -105,7 +104,7 @@ class App extends Component {
         `https://api.spotify.com/v1/tracks/${trackIDs[i]}`,
         {
           headers: {
-            Authorization: "Bearer " + this.state.accessToken,
+            Authorization: "Bearer " + accessToken,
           },
         }
       );
@@ -130,6 +129,8 @@ class App extends Component {
   }
 
   async getTracks(albums) {
+    let parsed = queryString.parse(window.location.search);
+    let accessToken = parsed.access_token;
     // get tracks for each album, resolving the promise on the last album
     const trackIDs = [];
     const prom = new Promise((resolve, reject) => {
@@ -138,7 +139,7 @@ class App extends Component {
           `https://api.spotify.com/v1/albums/${album.id}/tracks`,
           {
             headers: {
-              Authorization: "Bearer " + this.state.accessToken,
+              Authorization: "Bearer " + accessToken,
             },
           }
         );
@@ -151,6 +152,8 @@ class App extends Component {
   }
 
   async getAlbums(artistID) {
+    let parsed = queryString.parse(window.location.search);
+    let accessToken = parsed.access_token;
     this.setState({
       searching: true,
     })
@@ -160,7 +163,7 @@ class App extends Component {
       `https://api.spotify.com/v1/artists/${artistID}/albums`,
       {
         headers: {
-          Authorization: "Bearer " + this.state.accessToken,
+          Authorization: "Bearer " + accessToken,
         },
       }
     );
@@ -170,7 +173,7 @@ class App extends Component {
     this.getTracks(albums);
   }
 
-// render the sign in button if the user is not signed in
+  // render the sign in button if the user is not signed in
   render() {
     return (
       <Layout>
@@ -180,7 +183,7 @@ class App extends Component {
               <div style={{ gridArea: `welcome` }}>
                 <h2>Welcome</h2>
                 {this.state.user}</div>
-              <Search getAlbums={this.getAlbums.bind(this)} setArtistDetails={this.setArtistDetails.bind(this)} accessToken={this.state.accessToken}/>
+              <Search getAlbums={this.getAlbums.bind(this)} setArtistDetails={this.setArtistDetails.bind(this)} />
               {this.state.searching ? <div>
                 <Artist artistName={this.state.artistName} artistImageURL={this.state.artistImageURL} /> </div> : null}
               {this.state.found ?

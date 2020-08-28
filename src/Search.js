@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import queryString from "query-string";
 import styled from 'styled-components'
 
 const SearchForm = styled.form`
@@ -22,13 +23,15 @@ input {
 export default class Search extends Component{
     async handleSubmit(e) {
         e.preventDefault();
+        let parsed = queryString.parse(window.location.search);
+        let accessToken = parsed.access_token;
         // format query string parameters
         const searchParams = e.currentTarget[0].value.split(" ").join("+");
         const res = await fetch(
           `https://api.spotify.com/v1/search?query=${searchParams}&type=artist&limit=1`,
           {
             headers: {
-              Authorization: "Bearer " + this.props.accessToken,
+              Authorization: "Bearer " + accessToken,
             },
           }
         );
