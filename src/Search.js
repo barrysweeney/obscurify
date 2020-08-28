@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import queryString from "query-string";
 import styled from 'styled-components'
 
 const SearchForm = styled.form`
