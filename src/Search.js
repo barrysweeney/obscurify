@@ -35,7 +35,7 @@ export default class Search extends Component{
           }
         );
         const data = await res.json();
-        if(data.artists.items.length == 0){
+        if(data.artists.items.length === 0){
           return;
         }
         const artist = data.artists.items[0];
