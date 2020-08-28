@@ -88,7 +88,7 @@ class App extends Component {
     // get the logged in user's name
     const response = await fetch("https://api.spotify.com/v1/me", {
       headers: {
-        Authorization: "Bearer " + accessToken,
+        Authorization: "Bearer " + this.state.accessToken,
       },
     })
     const data = await response.json();
