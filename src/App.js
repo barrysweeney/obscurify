@@ -107,8 +107,11 @@ class App extends Component {
       const data = await res.json();
 
       if (data.popularity < leastPopular.popularity) {
+        if(data.artists[0].name === this.state.artistName){
+        console.log(data);
         leastPopular = data;
         leastPopularTrackAlbum = data.album;
+        }
       }
     }
     this.setState({
