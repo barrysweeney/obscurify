@@ -6,7 +6,6 @@ export default function LeastPopularTrackAlbum({ leastPopularTrackAlbumName, lea
             <h2>Album</h2>
             {leastPopularTrackAlbumName}<br/>
             <img src={leastPopularTrackAlbumImageURL} alt={`${leastPopularTrackAlbumName} album cover`}/>
-
         </div>
     )
 }

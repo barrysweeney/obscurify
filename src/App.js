@@ -10,13 +10,14 @@ import LeastPopularTrackAlbum from './LeastPopularTrackAlbum';
 import SignInButton from './SignInButton';
 import Layout from './Layout'
 
+// CSS grid layout that switches from 3 to 2 to 1 column as screen width decreases
 const GridContainer = styled.div`
 display: grid;
 grid-gap: 10px;
 padding: 10px;
 grid-template-areas: "welcome track track" 
-"search artist album";
-img{
+                     "search artist album";
+img {
   width: 500px; 
   height: 500px;
 }
@@ -62,6 +63,7 @@ class App extends Component {
       artistName: null,
       searching: false,
       found: false,
+      accessToken: "",
     };
   }
 
@@ -75,9 +77,15 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    let parsed = queryString.parse(window.location.search);
-    let accessToken = parsed.access_token;
+    // get access token for API calls from URL
+    if (this.state.accessToken.length === 0) {
+      let parsed = queryString.parse(window.location.search);
+      this.setState({
+        accessToken: parsed.access_token,
+      })
+    }
 
+    // get the logged in user's name
     const response = await fetch("https://api.spotify.com/v1/me", {
       headers: {
         Authorization: "Bearer " + accessToken,
@@ -90,29 +98,30 @@ class App extends Component {
   }
 
   async findLeastPopularTrack(trackIDs) {
-    let leastPopular = { popularity: 100 };
-    let leastPopularTrackAlbum = {};
-    let parsed = queryString.parse(window.location.search);
-    let accessToken = parsed.access_token;
+    let leastPopular;
+    let leastPopularTrackAlbum;
 
+    // get each tracks popularity
     for (let i = 0; i < trackIDs.length; i++) {
       const res = await fetch(
         `https://api.spotify.com/v1/tracks/${trackIDs[i]}`,
         {
           headers: {
-            Authorization: "Bearer " + accessToken,
+            Authorization: "Bearer " + this.state.accessToken,
           },
         }
       );
       const data = await res.json();
 
-      if (data.popularity < leastPopular.popularity) {
-        if(data.artists[0].name === this.state.artistName){
-        leastPopular = data;
-        leastPopularTrackAlbum = data.album;
+      // a track is the least popular if it's popularity is less than the current least popular track
+      if (leastPopular === null || data.popularity < leastPopular.popularity) {
+        if (data.artists[0].name === this.state.artistName) {
+          leastPopular = data;
+          leastPopularTrackAlbum = data.album;
         }
       }
     }
+
     this.setState({
       leastPopularTrackName: leastPopular.name,
       leastPopularTrackAlbumImageURL: leastPopularTrackAlbum.images[0].url,
@@ -123,8 +132,7 @@ class App extends Component {
   }
 
   async getTracks(albums) {
-    let parsed = queryString.parse(window.location.search);
-    let accessToken = parsed.access_token;
+    // get tracks for each album, resolving the promise on the last album
     const trackIDs = [];
     const prom = new Promise((resolve, reject) => {
       albums.forEach(async (album, index, array) => {
@@ -132,7 +140,7 @@ class App extends Component {
           `https://api.spotify.com/v1/albums/${album.id}/tracks`,
           {
             headers: {
-              Authorization: "Bearer " + accessToken,
+              Authorization: "Bearer " + this.state.accessToken,
             },
           }
         );
@@ -148,13 +156,13 @@ class App extends Component {
     this.setState({
       searching: true,
     })
-    let parsed = queryString.parse(window.location.search);
-    let accessToken = parsed.access_token;
+
+    // get all albums for an artist
     const res = await fetch(
       `https://api.spotify.com/v1/artists/${artistID}/albums`,
       {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + this.state.accessToken,
         },
       }
     );
@@ -164,22 +172,22 @@ class App extends Component {
     this.getTracks(albums);
   }
 
-
+// render the sign in button if the user is not signed in
   render() {
     return (
       <Layout>
         {
           this.state.user ?
             <GridContainer>
-              <div style={{ gridArea:`welcome`}}>
+              <div style={{ gridArea: `welcome` }}>
                 <h2>Welcome</h2>
-                 {this.state.user}</div>
-              <Search getAlbums={this.getAlbums.bind(this)} setArtistDetails={this.setArtistDetails.bind(this)} />
+                {this.state.user}</div>
+              <Search getAlbums={this.getAlbums.bind(this)} setArtistDetails={this.setArtistDetails.bind(this)} accessToken={this.state.accessToken}/>
               {this.state.searching ? <div>
                 <Artist artistName={this.state.artistName} artistImageURL={this.state.artistImageURL} /> </div> : null}
               {this.state.found ?
                 <LeastPopularTrackAlbum searching={this.state.searching} leastPopularTrackAlbumName={this.state.leastPopularTrackAlbumName} leastPopularTrackAlbumImageURL={this.state.leastPopularTrackAlbumImageURL} />
-                :     this.state.searching ? <div style={{paddingTop: `15px`}}>Analyzing<br/><Loader type="Audio" color="#00BFFF" height={80} width={80} /></div> : null }
+                : this.state.searching ? <div style={{ paddingTop: `15px` }}>Analyzing<br /><Loader type="Audio" color="#00BFFF" height={80} width={80} /></div> : null}
               {this.state.found ?
                 <LeastPopularTrack searching={this.state.searching} leastPopularTrackName={this.state.leastPopularTrackName} leastPopularTrackURL={this.state.leastPopularTrackURL} />
                 : null}

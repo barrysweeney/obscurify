@@ -12,7 +12,7 @@ border: 1px solid green;
 font-size: 1em;
 `
 
-
+// makes request to backend to sign in using Spotify when clicked
 export default function SignInButton() {
     return (
         <ButtonWrapper

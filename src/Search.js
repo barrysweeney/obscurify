@@ -23,26 +23,27 @@ input {
 export default class Search extends Component{
     async handleSubmit(e) {
         e.preventDefault();
-        let parsed = queryString.parse(window.location.search);
-        let accessToken = parsed.access_token;
+        // format query string parameters
         const searchParams = e.currentTarget[0].value.split(" ").join("+");
         const res = await fetch(
           `https://api.spotify.com/v1/search?query=${searchParams}&type=artist&limit=1`,
           {
             headers: {
-              Authorization: "Bearer " + accessToken,
+              Authorization: "Bearer " + this.props.accessToken,
             },
           }
         );
         const data = await res.json();
+
+        // break out of function if no artists were found
         if(data.artists.items.length === 0){
           return;
         }
+
         const artist = data.artists.items[0];
         const artistID = artist.id;
     
         this.props.setArtistDetails(artist)
-
         this.props.getAlbums(artistID);
       }
 
