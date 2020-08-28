@@ -78,12 +78,10 @@ class App extends Component {
 
   async componentDidMount() {
     // get access token for API calls from URL
-    if (this.state.accessToken.length === 0) {
       let parsed = queryString.parse(window.location.search);
       this.setState({
         accessToken: parsed.access_token,
       })
-    }
 
     // get the logged in user's name
     const response = await fetch("https://api.spotify.com/v1/me", {
